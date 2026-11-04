@@ -1,4 +1,4 @@
-// src/config/db.ts
+// (dia 16) src/config/db.ts
 //
 import { Pool } from 'pg';
 import dotenv from 'dotenv';
