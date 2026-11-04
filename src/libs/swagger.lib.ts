@@ -15,7 +15,11 @@ const outputFile = 'swagger-output.json';
 
 const endpointsFiles = ['./src/index.ts'];
 
-swaggerAutogen()(outputFile, endpointsFiles, doc).then(async () => {
-    await import('../index.js');
-});
+// swaggerAutogen()(outputFile, endpointsFiles, doc).then(async () => {
+//    await import('../index.js');
+// });
+
+// Eliminamos el .then(async () => { await import('../index.js'); })
+swaggerAutogen()(outputFile, endpointsFiles, doc);
+
 // fin - archivo src/libs/swagger.lib.ts
