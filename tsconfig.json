@@ -6,10 +6,10 @@
 
     // Environment Settings
     "module": "nodenext",
-    "moduleResolution": "nodenext",              /* AGREGADO: Crucial para "nodenext" y ESM */
+    "moduleResolution": "nodenext", /* AGREGADO: Crucial para "nodenext" y ESM */
     "target": "esnext",
-    "lib": ["esnext"],                           /* DESCOMENTADO: Para soportar funciones JS modernas */
-    "types": ["node"],                           /* DESCOMENTADO: Para que reconozca variables de Node.js */
+    "lib": ["esnext"],              /* DESCOMENTADO: Para soportar funciones JS modernas */
+    "types": ["node"],              /* DESCOMENTADO: Para que reconozca variables de Node.js */
 
     // Other Outputs
     "sourceMap": true,

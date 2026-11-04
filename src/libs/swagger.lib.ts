@@ -1,3 +1,4 @@
+// archivo src/libs/swagger.lib.ts Swagger Documentation Generation Script
 import swaggerAutogen from 'swagger-autogen';
 
 const doc = {
@@ -17,3 +18,4 @@ const endpointsFiles = ['./src/index.ts'];
 swaggerAutogen()(outputFile, endpointsFiles, doc).then(async () => {
     await import('../index.js');
 });
+// fin - archivo src/libs/swagger.lib.ts
