@@ -1,4 +1,4 @@
-// (dia 16 - 17 entregable) index.ts
+// (dia 16 - 17 - 18 entregable) index.ts
 import express, { type Request, type Response } from "express"; 
 import swaggerRouter from "./routes/swagger.router.js";
 
@@ -49,7 +49,7 @@ const startServer = async () => {
     console.log("Conexión a la base de datos establecida.");
 
     app.listen(port, () => {
-      console.log(`Server El Rincon del Sabor (dia 17) URL: http://localhost:${port}`);
+      console.log(`Server El Rincon del Sabor (dia 18) URL: http://localhost:${port}`);
     });
   } catch (error) {
     console.error("No se pudo conectar a la base de datos:", error);
