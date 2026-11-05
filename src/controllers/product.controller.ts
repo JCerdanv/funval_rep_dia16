@@ -1,12 +1,39 @@
-// (dia 17) src/controllers/product.controller.ts
+// (dia 18 - 19) src/controllers/product.controller.ts
 import { Request, Response } from 'express';
 import * as productModel from '../models/product.model.js';
 
+// agregado 1. Importa el tipo DTO desde tu middleware de validación
+import { ProductDTO } from '../middlewares/validate-product.js'; 
+//
+
+// export const getMenu = async (req: Request, res: Response): Promise<void> => {
+//   /* #swagger.tags = ['Products']
+//      #swagger.summary = 'Obtener todos los productos del menú' */
+//   try {
+//     const products = await productModel.getAllProducts();
+//     res.json(products);
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ message: 'Error interno del servidor al obtener el menú.' });
+//   }
+// };
+
 export const getMenu = async (req: Request, res: Response): Promise<void> => {
   /* #swagger.tags = ['Products']
-     #swagger.summary = 'Obtener todos los productos del menú' */
+     #swagger.summary = 'Obtener todos los productos del menú con filtros opcionales' */
   try {
-    const products = await productModel.getAllProducts();
+    // 1. Extraer los parámetros opcionales de la URL (?name=mar&limit=3)
+    const searchName = req.query.name ? String(req.query.name) : undefined;
+    const limitParam = req.query.limit ? parseInt(String(req.query.limit), 10) : undefined;
+
+    // 2. Validar que si envían un límite, sea un número válido y positivo
+    if (limitParam !== undefined && (isNaN(limitParam) || limitParam <= 0)) {
+      res.status(400).json({ message: "El parámetro 'limit' debe ser un número entero positivo." });
+      return;
+    }
+
+    // 3. Pasar los parámetros limpios al modelo
+    const products = await productModel.getAllProducts(searchName, limitParam);
     res.json(products);
   } catch (error) {
     console.error(error);
@@ -38,44 +65,72 @@ export const getProduct = async (req: Request, res: Response): Promise<void> => 
   }
 };
 
-export const createProduct = async (req: Request, res: Response): Promise<void> => {
+// 2. Tipamos explícitamente el Body como ProductDTO
+export const createProduct = async (
+  req: Request<{}, {}, ProductDTO>,
+  res: Response
+): Promise<void> => {
   /* #swagger.tags = ['Products']
-     #swagger.summary = 'Crear un nuevo producto en el menú' */
+     #swagger.summary = 'Crear un nuevo producto en el menú'
+     #swagger.parameters['body'] = {
+        in: 'body',
+        description: 'Datos del producto a registrar',
+        required: true,
+        schema: { $ref: '#/definitions/ProductDTO' }
+     } */
   try {
-    const { name, description, price } = req.body;
-    const newProduct = await productModel.insertProduct(name, description, price);
+    const { name, description, price, cost, stock, eliminado } = req.body;
+    // Fallbacks directos por seguridad estructural hacia el modelo si son opcionales
+    const newProduct = await productModel.insertProduct(
+      name, 
+      description, 
+      price, 
+      cost ?? 0, 
+      stock ?? 0, 
+      eliminado ?? false
+    );
     res.status(201).json(newProduct);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Error interno del servidor al crear el producto.' });
+    res.status(500).json({ message: "Error interno del servidor al crear el producto." });
   }
 };
 
-export const updateProduct = async (req: Request, res: Response): Promise<void> => {
+// 3. Lo mismo para la actualización
+export const updateProduct = async (
+  req: Request<{ id: string }, {}, ProductDTO>,
+  res: Response
+): Promise<void> => {
   /* #swagger.tags = ['Products']
      #swagger.summary = 'Actualizar un producto existente' */
   try {
-    const id = parseInt(req.params.id as string, 10);
-
-    // Validación: Evita que IDs inválidos (letras) pasen a la base de datos
+    const id = parseInt(req.params.id, 10);
     if (isNaN(id)) {
-      res.status(400).json({ message: 'El ID proporcionado debe ser un número válido.' });
+      res.status(400).json({ message: "El ID proporcionado debe ser un número válido." });
       return;
     }
-
-    const { name, description, price } = req.body;
-    const updatedProduct = await productModel.updateProduct(id, name, description, price);
+    const { name, description, price, cost, stock, eliminado } = req.body;
+    const updatedProduct = await productModel.updateProduct(
+      id,
+      name,
+      description,
+      price,
+      cost ?? 0,
+      stock ?? 0,
+      eliminado ?? false
+    );
     if (!updatedProduct) {
-      res.status(404).json({ message: 'Producto no encontrado para actualizar.' });
+      res.status(404).json({ message: "Producto no encontrado para actualizar." });
       return;
     }
     res.json(updatedProduct);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Error interno del servidor al actualizar el producto.' });
+    res.status(500).json({ message: "Error interno del servidor al actualizar el producto." });
   }
 };
 
+//hard deleteProduct
 export const deleteProduct = async (req: Request, res: Response): Promise<void> => {
   /* #swagger.tags = ['Products'] 
      #swagger.summary = 'Eliminar un producto por ID' */

@@ -1,8 +1,9 @@
-// (dia 16 - 17 entregable) index.ts
+// (dia 16 - 17 - 18 - 19 entregable) index.ts
 import express, { type Request, type Response } from "express"; 
 import swaggerRouter from "./routes/swagger.router.js";
 
-import productosRouter from "./routes/product.routes.js"; // (dia 17) Importamos el router MVC de productos
+import productosRouter from "./routes/product.routes.js"; // (dia 17) Importamos router MVC productos
+import clientesRouter from "./routes/customer.routes.js"; // (dia 19) Importamos enrutador clientes
 
 import cors from "cors"
 import pool from "./config/db.js"; // Importa el pool creado
@@ -16,31 +17,17 @@ app.use(cors());
 
 // Rutas de documentación y API
 app.use("/api/docs", swaggerRouter);
-app.use("/api", productosRouter); // (dia 17) Montamos las rutas estructuradas bajo el prefijo /api
+app.use("/api", productosRouter); // (dia 17) Rutas estructuradas con prefijo /api
+app.use("/api", clientesRouter); // (dia 19) Rutas clientes con prefijo /api
 
 
 // Endpoint base de prueba
 app.get("/", (req: Request, res: Response) => {
     /*#swagger.tags = ['Tests']*/
     res.json({
-        status: "Server online",
-        version: "1.0.0"
+        status: "Server online", version: "1.0.0"
     });
 });
-
-// (dia17) Eliminado app.get("/api/menu") ahora product.controller.ts
-
-// 4. Crea el endpoint GET /api/menu
-// app.get("/api/menu", async (req: Request, res: Response) => {
-//   /*#swagger.tags = ['Menu']*/
-//   try {
-//     const result = await pool.query("SELECT * FROM products");
-//     res.json(result.rows);
-//   } catch (error) {
-//    console.error("Error al obtener el menú:", error);
-//    res.status(500).json({ error: "Error interno del servidor" });
-//  }
-// });
 
 const startServer = async () => {
   try {
@@ -49,7 +36,7 @@ const startServer = async () => {
     console.log("Conexión a la base de datos establecida.");
 
     app.listen(port, () => {
-      console.log(`Server El Rincon del Sabor (dia 17) URL: http://localhost:${port}`);
+      console.log(`Server El Rincon del Sabor (dia 19) URL: http://localhost:${port}`);
     });
   } catch (error) {
     console.error("No se pudo conectar a la base de datos:", error);
